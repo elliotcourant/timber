@@ -5,6 +5,123 @@ import (
 	"fmt"
 )
 
+type Keys map[string]interface{}
+
+type Level string
+
+const (
+	Critical Level = "critical"
+	Debug          = "debug"
+	Error          = "error"
+	Fatal          = "fatal"
+	Info           = "info"
+	Trace          = "trace"
+	Verbose        = "verbose"
+	Warning        = "warning"
+)
+
+type Logger interface {
+
+	// Critical writes the provided string to the log.
+	Critical(msg string)
+
+	// Criticalf writes a formatted string using the arguments provided to the log.
+	Criticalf(msg string, args ...interface{})
+
+	// CriticalEx writes a formatted string using the arguments provided to the log
+	// but also will prefix the log message with they keys provided to help print
+	// runtime variables.
+	CriticalEx(keys Keys, msg string, args ...interface{})
+
+	// Debug writes the provided string to the log.
+	Debug(msg string)
+
+	// Debugf writes a formatted string using the arguments provided to the log.
+	Debugf(msg string, args ...interface{})
+
+	// DebugEx writes a formatted string using the arguments provided to the log
+	// but also will prefix the log message with they keys provided to help print
+	// runtime variables.
+	DebugEx(keys Keys, msg string, args ...interface{})
+
+	// Error writes the provided string to the log.
+	Error(msg string)
+
+	// Errorf writes a formatted string using the arguments provided to the log.
+	Errorf(msg string, args ...interface{})
+
+	// ErrorEx writes a formatted string using the arguments provided to the log
+	// but also will prefix the log message with they keys provided to help print
+	// runtime variables.
+	ErrorEx(keys Keys, msg string, args ...interface{})
+
+	// Fatal writes the provided string to the log.
+	Fatal(msg string)
+
+	// Fatalf writes a formatted string using the arguments provided to the log.
+	Fatalf(msg string, args ...interface{})
+
+	// FatalEx writes a formatted string using the arguments provided to the log
+	// but also will prefix the log message with they keys provided to help print
+	// runtime variables.
+	FatalEx(keys Keys, msg string, args ...interface{})
+
+	// Info writes the provided string to the log.
+	Info(msg string)
+
+	// Infof writes a formatted string using the arguments provided to the log.
+	Infof(msg string, args ...interface{})
+
+	// InfoEx writes a formatted string using the arguments provided to the log
+	// but also will prefix the log message with they keys provided to help print
+	// runtime variables.
+	InfoEx(keys Keys, msg string, args ...interface{})
+
+	// Trace writes the provided string to the log.
+	Trace(msg string)
+
+	// Tracef writes a formatted string using the arguments provided to the log.
+	Tracef(msg string, args ...interface{})
+
+	// TraceEx writes a formatted string using the arguments provided to the log
+	// but also will prefix the log message with they keys provided to help print
+	// runtime variables.
+	TraceEx(keys Keys, msg string, args ...interface{})
+
+	// Verbose writes the provided string to the log.
+	Verbose(msg string)
+
+	// Verbosef writes a formatted string using the arguments provided to the log.
+	Verbosef(msg string, args ...interface{})
+
+	// VerboseEx writes a formatted string using the arguments provided to the log
+	// but also will prefix the log message with they keys provided to help print
+	// runtime variables.
+	VerboseEx(keys Keys, msg string, args ...interface{})
+
+	// Warning writes the provided string to the log.
+	Warning(msg string)
+
+	// Warningf writes a formatted string using the arguments provided to the log.
+	Warningf(msg string, args ...interface{})
+
+	// WarningEx writes a formatted string using the arguments provided to the log
+	// but also will prefix the log message with they keys provided to help print
+	// runtime variables.
+	WarningEx(keys Keys, msg string, args ...interface{})
+
+	// Log will write a raw entry to the log, it accepts an array of interfaces which will
+	// be converted to strings if they are not already.
+	Log(lvl Level, v ...interface{})
+
+	// With will create a new Logger interface that will prefix all log entries written
+	// from the new interface with the keys specified here. It will also include any
+	// keys that are specified in the current Logger instance.
+	// This means that you can chain multiple of these together to add/remove keys that
+	// are written with every message.
+	With(keys Keys) Logger
+}
+
 // Critical writes the provided string to the log.
 func (l *logger) Critical(msg string) {
 	l.log(l.stackDepth, Critical, nil, msg)

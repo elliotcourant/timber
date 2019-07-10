@@ -13,6 +13,10 @@ type data struct {
 }
 
 func main() {
+	funcMap := template.FuncMap{
+		"ToLower": strings.ToLower,
+	}
+
 	var d data
 	var items string
 	flag.StringVar(&items, "levels", "", "List of levels")
@@ -23,7 +27,7 @@ func main() {
 		sort.Strings(d.Levels)
 	}
 
-	t := template.Must(template.New("queue").Parse(queueTemplate))
+	t := template.Must(template.New("queue").Funcs(funcMap).Parse(queueTemplate))
 	t.Execute(os.Stdout, d)
 }
 
@@ -32,7 +36,40 @@ package timber
 
 import (
 	"fmt"
-){{range .Levels}}
+)
+
+type Keys map[string]interface{}
+
+type Level string
+
+const ({{range $index, $level := .Levels}}
+	{{$level}} {{if (eq $index 0)}} Level{{end}} = "{{ $level | ToLower }}"{{end}}
+)
+
+type Logger interface {
+{{range .Levels}}
+	// {{.}} writes the provided string to the log.
+	{{.}}(msg string)
+
+	// {{.}}f writes a formatted string using the arguments provided to the log.
+	{{.}}f(msg string, args ...interface{})
+
+	// {{.}}Ex writes a formatted string using the arguments provided to the log
+	// but also will prefix the log message with they keys provided to help print
+	// runtime variables.
+	{{.}}Ex(keys Keys, msg string, args ...interface{})
+{{end}}
+	// Log will write a raw entry to the log, it accepts an array of interfaces which will
+	// be converted to strings if they are not already.
+	Log(lvl Level, v ...interface{})
+
+	// With will create a new Logger interface that will prefix all log entries written
+	// from the new interface with the keys specified here. It will also include any
+	// keys that are specified in the current Logger instance.
+	// This means that you can chain multiple of these together to add/remove keys that
+	// are written with every message.
+	With(keys Keys) Logger
+}{{range .Levels}}
 
 // {{.}} writes the provided string to the log.
 func (l *logger) {{.}}(msg string) {
