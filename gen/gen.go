@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"os"
+	"sort"
 	"strings"
 	"text/template"
 )
@@ -19,6 +20,7 @@ func main() {
 
 	if items != "" {
 		d.Levels = strings.Split(items, ",")
+		sort.Strings(d.Levels)
 	}
 
 	t := template.Must(template.New("queue").Parse(queueTemplate))
