@@ -49,6 +49,10 @@ func keys(keys ...Keys) string {
 	msg := make([]string, 0)
 	for _, keySet := range keys {
 		for k, v := range keySet {
+			// Exclude items where the value is null.
+			if v == nil {
+				continue
+			}
 			msg = append(msg, fmt.Sprintf(`%s: %v`, k, v))
 		}
 	}

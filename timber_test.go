@@ -10,9 +10,18 @@ func TestNew(t *testing.T) {
 }
 
 func TestWith(t *testing.T) {
-	With(map[string]interface{}{
-		"things": "stuff",
-	}).Debug("test")
+	t.Run("normal", func(t *testing.T) {
+		With(map[string]interface{}{
+			"things": "stuff",
+		}).Debug("test")
+	})
+
+	t.Run("with null value", func(t *testing.T) {
+		With(map[string]interface{}{
+			"things":      "stuff",
+			"otherThings": nil,
+		}).Debug("test")
+	})
 }
 
 func TestLogger_Log(t *testing.T) {
