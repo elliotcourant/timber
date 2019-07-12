@@ -45,12 +45,26 @@ type logger struct {
 	keys       Keys
 }
 
-func (l *logger) log(stack int, lvl Level, m map[string]interface{}, v ...interface{}) {
-	switch len(m) {
+func keys(keys ...Keys) string {
+	msg := make([]string, 0)
+	for _, keySet := range keys {
+		for k, v := range keySet {
+			msg = append(msg, fmt.Sprintf(`%s: %v`, k, v))
+		}
+	}
+	if len(msg) == 0 {
+		return ""
+	}
+	return fmt.Sprintf("[ %s ]", strings.Join(msg, ", "))
+}
+
+func (l *logger) log(stack int, lvl Level, m Keys, v ...interface{}) {
+	k := keys(l.keys, m)
+	switch len(k) {
 	case 0:
 		fmt.Println(fmt.Sprintf("[%s]", strings.ToUpper(string(lvl))), CallerInfo(stack), fmt.Sprint(v...))
 	default:
-		fmt.Println(fmt.Sprintf("[%s]", strings.ToUpper(string(lvl))), CallerInfo(stack), m, fmt.Sprint(v...))
+		fmt.Println(fmt.Sprintf("[%s]", strings.ToUpper(string(lvl))), CallerInfo(stack), k, fmt.Sprint(v...))
 	}
 }
 
