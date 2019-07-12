@@ -24,7 +24,6 @@ const (
 )
 
 type Logger interface {
-	loggerBase
 
 	// Trace writes the provided string to the log.
 	Trace(msg string)
@@ -113,6 +112,17 @@ type Logger interface {
 	// but also will prefix the log message with they keys provided to help print
 	// runtime variables.
 	FatalEx(keys Keys, msg string, args ...interface{})
+
+	// Log will write a raw entry to the log, it accepts an array of interfaces which will
+	// be converted to strings if they are not already.
+	Log(lvl Level, v ...interface{})
+
+	// With will create a new Logger interface that will prefix all log entries written
+	// from the new interface with the keys specified here. It will also include any
+	// keys that are specified in the current Logger instance.
+	// This means that you can chain multiple of these together to add/remove keys that
+	// are written with every message.
+	With(keys Keys) Logger
 }
 
 // Trace writes the provided string to the log.

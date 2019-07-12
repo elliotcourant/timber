@@ -20,19 +20,6 @@ func init() {
 	}
 }
 
-type LoggerBase interface {
-	// Log will write a raw entry to the log, it accepts an array of interfaces which will
-	// be converted to strings if they are not already.
-	Log(lvl Level, v ...interface{})
-
-	// With will create a new Logger interface that will prefix all log entries written
-	// from the new interface with the keys specified here. It will also include any
-	// keys that are specified in the current Logger instance.
-	// This means that you can chain multiple of these together to add/remove keys that
-	// are written with every message.
-	With(keys Keys) Logger
-}
-
 func New() Logger {
 	return &logger{
 		stackDepth: defaultStackDepth,
