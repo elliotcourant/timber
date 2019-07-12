@@ -1,0 +1,52 @@
+{
+  "levels": [
+    {
+      "name": "Trace",
+      "shortName": "TRCE",
+      "foregroundColor": "Gray",
+      "backgroundColor": null
+    },
+    {
+      "name": "Verbose",
+      "shortName": "VERB",
+      "foregroundColor": "LightGray",
+      "backgroundColor": null
+    },
+    {
+      "name": "Debug",
+      "shortName": "DBUG",
+      "foregroundColor": "LightGray",
+      "backgroundColor": null
+    },
+    {
+      "name": "Info",
+      "shortName": "INFO",
+      "foregroundColor": "White",
+      "backgroundColor": null
+    },
+    {
+      "name": "Warning",
+      "shortName": "WARN",
+      "foregroundColor": "Yellow",
+      "backgroundColor": null
+    },
+    {
+      "name": "Error",
+      "shortName": "ERRR",
+      "foregroundColor": "Red",
+      "backgroundColor": null
+    },
+    {
+      "name": "Critical",
+      "shortName": "CRIT",
+      "foregroundColor": "White",
+      "backgroundColor": "Red"
+    },
+    {
+      "name": "Fatal",
+      "shortName": "FATL",
+      "foregroundColor": "Red",
+      "backgroundColor": "White"
+    }
+  ]
+}
