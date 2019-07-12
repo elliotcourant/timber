@@ -13,17 +13,18 @@ type Keys map[string]interface{}
 type Level string
 
 const (
-	Trace    Level = "trace"
-	Verbose        = "verbose"
-	Debug          = "debug"
-	Info           = "info"
-	Warning        = "warning"
-	Error          = "error"
-	Critical       = "critical"
-	Fatal          = "fatal"
+	Level_Trace    Level = "trace"
+	Level_Verbose        = "verbose"
+	Level_Debug          = "debug"
+	Level_Info           = "info"
+	Level_Warning        = "warning"
+	Level_Error          = "error"
+	Level_Critical       = "critical"
+	Level_Fatal          = "fatal"
 )
 
 type Logger interface {
+	loggerBase
 
 	// Trace writes the provided string to the log.
 	Trace(msg string)
@@ -112,151 +113,276 @@ type Logger interface {
 	// but also will prefix the log message with they keys provided to help print
 	// runtime variables.
 	FatalEx(keys Keys, msg string, args ...interface{})
-
-	// Log will write a raw entry to the log, it accepts an array of interfaces which will
-	// be converted to strings if they are not already.
-	Log(lvl Level, v ...interface{})
-
-	// With will create a new Logger interface that will prefix all log entries written
-	// from the new interface with the keys specified here. It will also include any
-	// keys that are specified in the current Logger instance.
-	// This means that you can chain multiple of these together to add/remove keys that
-	// are written with every message.
-	With(keys Keys) Logger
 }
 
 // Trace writes the provided string to the log.
 func (l *logger) Trace(msg string) {
-	l.log(l.stackDepth, Trace, nil, msg)
+	l.log(l.stackDepth, Level_Trace, nil, msg)
 }
 
 // Tracef writes a formatted string using the arguments provided to the log.
 func (l *logger) Tracef(msg string, args ...interface{}) {
-	l.log(l.stackDepth, Trace, nil, fmt.Sprintf(msg, args...))
+	l.log(l.stackDepth, Level_Trace, nil, fmt.Sprintf(msg, args...))
 }
 
 // TraceEx writes a formatted string using the arguments provided to the log
 // but also will prefix the log message with they keys provided to help print
 // runtime variables.
 func (l *logger) TraceEx(keys Keys, msg string, args ...interface{}) {
-	l.log(l.stackDepth, Trace, keys, fmt.Sprintf(msg, args...))
+	l.log(l.stackDepth, Level_Trace, keys, fmt.Sprintf(msg, args...))
 }
 
 // Verbose writes the provided string to the log.
 func (l *logger) Verbose(msg string) {
-	l.log(l.stackDepth, Verbose, nil, msg)
+	l.log(l.stackDepth, Level_Verbose, nil, msg)
 }
 
 // Verbosef writes a formatted string using the arguments provided to the log.
 func (l *logger) Verbosef(msg string, args ...interface{}) {
-	l.log(l.stackDepth, Verbose, nil, fmt.Sprintf(msg, args...))
+	l.log(l.stackDepth, Level_Verbose, nil, fmt.Sprintf(msg, args...))
 }
 
 // VerboseEx writes a formatted string using the arguments provided to the log
 // but also will prefix the log message with they keys provided to help print
 // runtime variables.
 func (l *logger) VerboseEx(keys Keys, msg string, args ...interface{}) {
-	l.log(l.stackDepth, Verbose, keys, fmt.Sprintf(msg, args...))
+	l.log(l.stackDepth, Level_Verbose, keys, fmt.Sprintf(msg, args...))
 }
 
 // Debug writes the provided string to the log.
 func (l *logger) Debug(msg string) {
-	l.log(l.stackDepth, Debug, nil, msg)
+	l.log(l.stackDepth, Level_Debug, nil, msg)
 }
 
 // Debugf writes a formatted string using the arguments provided to the log.
 func (l *logger) Debugf(msg string, args ...interface{}) {
-	l.log(l.stackDepth, Debug, nil, fmt.Sprintf(msg, args...))
+	l.log(l.stackDepth, Level_Debug, nil, fmt.Sprintf(msg, args...))
 }
 
 // DebugEx writes a formatted string using the arguments provided to the log
 // but also will prefix the log message with they keys provided to help print
 // runtime variables.
 func (l *logger) DebugEx(keys Keys, msg string, args ...interface{}) {
-	l.log(l.stackDepth, Debug, keys, fmt.Sprintf(msg, args...))
+	l.log(l.stackDepth, Level_Debug, keys, fmt.Sprintf(msg, args...))
 }
 
 // Info writes the provided string to the log.
 func (l *logger) Info(msg string) {
-	l.log(l.stackDepth, Info, nil, msg)
+	l.log(l.stackDepth, Level_Info, nil, msg)
 }
 
 // Infof writes a formatted string using the arguments provided to the log.
 func (l *logger) Infof(msg string, args ...interface{}) {
-	l.log(l.stackDepth, Info, nil, fmt.Sprintf(msg, args...))
+	l.log(l.stackDepth, Level_Info, nil, fmt.Sprintf(msg, args...))
 }
 
 // InfoEx writes a formatted string using the arguments provided to the log
 // but also will prefix the log message with they keys provided to help print
 // runtime variables.
 func (l *logger) InfoEx(keys Keys, msg string, args ...interface{}) {
-	l.log(l.stackDepth, Info, keys, fmt.Sprintf(msg, args...))
+	l.log(l.stackDepth, Level_Info, keys, fmt.Sprintf(msg, args...))
 }
 
 // Warning writes the provided string to the log.
 func (l *logger) Warning(msg string) {
-	l.log(l.stackDepth, Warning, nil, msg)
+	l.log(l.stackDepth, Level_Warning, nil, msg)
 }
 
 // Warningf writes a formatted string using the arguments provided to the log.
 func (l *logger) Warningf(msg string, args ...interface{}) {
-	l.log(l.stackDepth, Warning, nil, fmt.Sprintf(msg, args...))
+	l.log(l.stackDepth, Level_Warning, nil, fmt.Sprintf(msg, args...))
 }
 
 // WarningEx writes a formatted string using the arguments provided to the log
 // but also will prefix the log message with they keys provided to help print
 // runtime variables.
 func (l *logger) WarningEx(keys Keys, msg string, args ...interface{}) {
-	l.log(l.stackDepth, Warning, keys, fmt.Sprintf(msg, args...))
+	l.log(l.stackDepth, Level_Warning, keys, fmt.Sprintf(msg, args...))
 }
 
 // Error writes the provided string to the log.
 func (l *logger) Error(msg string) {
-	l.log(l.stackDepth, Error, nil, msg)
+	l.log(l.stackDepth, Level_Error, nil, msg)
 }
 
 // Errorf writes a formatted string using the arguments provided to the log.
 func (l *logger) Errorf(msg string, args ...interface{}) {
-	l.log(l.stackDepth, Error, nil, fmt.Sprintf(msg, args...))
+	l.log(l.stackDepth, Level_Error, nil, fmt.Sprintf(msg, args...))
 }
 
 // ErrorEx writes a formatted string using the arguments provided to the log
 // but also will prefix the log message with they keys provided to help print
 // runtime variables.
 func (l *logger) ErrorEx(keys Keys, msg string, args ...interface{}) {
-	l.log(l.stackDepth, Error, keys, fmt.Sprintf(msg, args...))
+	l.log(l.stackDepth, Level_Error, keys, fmt.Sprintf(msg, args...))
 }
 
 // Critical writes the provided string to the log.
 func (l *logger) Critical(msg string) {
-	l.log(l.stackDepth, Critical, nil, msg)
+	l.log(l.stackDepth, Level_Critical, nil, msg)
 }
 
 // Criticalf writes a formatted string using the arguments provided to the log.
 func (l *logger) Criticalf(msg string, args ...interface{}) {
-	l.log(l.stackDepth, Critical, nil, fmt.Sprintf(msg, args...))
+	l.log(l.stackDepth, Level_Critical, nil, fmt.Sprintf(msg, args...))
 }
 
 // CriticalEx writes a formatted string using the arguments provided to the log
 // but also will prefix the log message with they keys provided to help print
 // runtime variables.
 func (l *logger) CriticalEx(keys Keys, msg string, args ...interface{}) {
-	l.log(l.stackDepth, Critical, keys, fmt.Sprintf(msg, args...))
+	l.log(l.stackDepth, Level_Critical, keys, fmt.Sprintf(msg, args...))
 }
 
 // Fatal writes the provided string to the log.
 func (l *logger) Fatal(msg string) {
-	l.log(l.stackDepth, Fatal, nil, msg)
+	l.log(l.stackDepth, Level_Fatal, nil, msg)
 }
 
 // Fatalf writes a formatted string using the arguments provided to the log.
 func (l *logger) Fatalf(msg string, args ...interface{}) {
-	l.log(l.stackDepth, Fatal, nil, fmt.Sprintf(msg, args...))
+	l.log(l.stackDepth, Level_Fatal, nil, fmt.Sprintf(msg, args...))
 }
 
 // FatalEx writes a formatted string using the arguments provided to the log
 // but also will prefix the log message with they keys provided to help print
 // runtime variables.
 func (l *logger) FatalEx(keys Keys, msg string, args ...interface{}) {
-	l.log(l.stackDepth, Fatal, keys, fmt.Sprintf(msg, args...))
+	l.log(l.stackDepth, Level_Fatal, keys, fmt.Sprintf(msg, args...))
+}
+
+// Trace writes the provided string to the log.
+func Trace(msg string) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Trace, nil, msg)
+}
+
+// Tracef writes a formatted string using the arguments provided to the log.
+func Tracef(msg string, args ...interface{}) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Trace, nil, fmt.Sprintf(msg, args...))
+}
+
+// TraceEx writes a formatted string using the arguments provided to the log
+// but also will prefix the log message with they keys provided to help print
+// runtime variables.
+func TraceEx(keys Keys, msg string, args ...interface{}) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Trace, keys, fmt.Sprintf(msg, args...))
+}
+
+// Verbose writes the provided string to the log.
+func Verbose(msg string) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Verbose, nil, msg)
+}
+
+// Verbosef writes a formatted string using the arguments provided to the log.
+func Verbosef(msg string, args ...interface{}) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Verbose, nil, fmt.Sprintf(msg, args...))
+}
+
+// VerboseEx writes a formatted string using the arguments provided to the log
+// but also will prefix the log message with they keys provided to help print
+// runtime variables.
+func VerboseEx(keys Keys, msg string, args ...interface{}) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Verbose, keys, fmt.Sprintf(msg, args...))
+}
+
+// Debug writes the provided string to the log.
+func Debug(msg string) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Debug, nil, msg)
+}
+
+// Debugf writes a formatted string using the arguments provided to the log.
+func Debugf(msg string, args ...interface{}) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Debug, nil, fmt.Sprintf(msg, args...))
+}
+
+// DebugEx writes a formatted string using the arguments provided to the log
+// but also will prefix the log message with they keys provided to help print
+// runtime variables.
+func DebugEx(keys Keys, msg string, args ...interface{}) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Debug, keys, fmt.Sprintf(msg, args...))
+}
+
+// Info writes the provided string to the log.
+func Info(msg string) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Info, nil, msg)
+}
+
+// Infof writes a formatted string using the arguments provided to the log.
+func Infof(msg string, args ...interface{}) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Info, nil, fmt.Sprintf(msg, args...))
+}
+
+// InfoEx writes a formatted string using the arguments provided to the log
+// but also will prefix the log message with they keys provided to help print
+// runtime variables.
+func InfoEx(keys Keys, msg string, args ...interface{}) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Info, keys, fmt.Sprintf(msg, args...))
+}
+
+// Warning writes the provided string to the log.
+func Warning(msg string) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Warning, nil, msg)
+}
+
+// Warningf writes a formatted string using the arguments provided to the log.
+func Warningf(msg string, args ...interface{}) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Warning, nil, fmt.Sprintf(msg, args...))
+}
+
+// WarningEx writes a formatted string using the arguments provided to the log
+// but also will prefix the log message with they keys provided to help print
+// runtime variables.
+func WarningEx(keys Keys, msg string, args ...interface{}) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Warning, keys, fmt.Sprintf(msg, args...))
+}
+
+// Error writes the provided string to the log.
+func Error(msg string) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Error, nil, msg)
+}
+
+// Errorf writes a formatted string using the arguments provided to the log.
+func Errorf(msg string, args ...interface{}) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Error, nil, fmt.Sprintf(msg, args...))
+}
+
+// ErrorEx writes a formatted string using the arguments provided to the log
+// but also will prefix the log message with they keys provided to help print
+// runtime variables.
+func ErrorEx(keys Keys, msg string, args ...interface{}) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Error, keys, fmt.Sprintf(msg, args...))
+}
+
+// Critical writes the provided string to the log.
+func Critical(msg string) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Critical, nil, msg)
+}
+
+// Criticalf writes a formatted string using the arguments provided to the log.
+func Criticalf(msg string, args ...interface{}) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Critical, nil, fmt.Sprintf(msg, args...))
+}
+
+// CriticalEx writes a formatted string using the arguments provided to the log
+// but also will prefix the log message with they keys provided to help print
+// runtime variables.
+func CriticalEx(keys Keys, msg string, args ...interface{}) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Critical, keys, fmt.Sprintf(msg, args...))
+}
+
+// Fatal writes the provided string to the log.
+func Fatal(msg string) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Fatal, nil, msg)
+}
+
+// Fatalf writes a formatted string using the arguments provided to the log.
+func Fatalf(msg string, args ...interface{}) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Fatal, nil, fmt.Sprintf(msg, args...))
+}
+
+// FatalEx writes a formatted string using the arguments provided to the log
+// but also will prefix the log message with they keys provided to help print
+// runtime variables.
+func FatalEx(keys Keys, msg string, args ...interface{}) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_Fatal, keys, fmt.Sprintf(msg, args...))
 }
