@@ -20,7 +20,7 @@ func init() {
 	}
 }
 
-type loggerBase interface {
+type LoggerBase interface {
 	// Log will write a raw entry to the log, it accepts an array of interfaces which will
 	// be converted to strings if they are not already.
 	Log(lvl Level, v ...interface{})
@@ -72,10 +72,17 @@ func (l *logger) log(stack int, lvl Level, m Keys, v ...interface{}) {
 	}
 }
 
+// Log will write a raw entry to the log, it accepts an array of interfaces which will
+// be converted to strings if they are not already.
 func (l *logger) Log(lvl Level, v ...interface{}) {
 	l.log(l.stackDepth, lvl, nil, v...)
 }
 
+// With will create a new Logger interface that will prefix all log entries written
+// from the new interface with the keys specified here. It will also include any
+// keys that are specified in the current Logger instance.
+// This means that you can chain multiple of these together to add/remove keys that
+// are written with every message.
 func (l *logger) With(keys Keys) Logger {
 	lg := *l
 	for k, v := range keys {
