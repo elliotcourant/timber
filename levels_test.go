@@ -22,6 +22,20 @@ func TestTraceEx(t *testing.T) {
 	}, "test")
 }
 
+func TestLogger_Trace(t *testing.T) {
+	New().Trace("test")
+}
+
+func TestLogger_Tracef(t *testing.T) {
+	New().Tracef("test %s", "format")
+}
+
+func TestLogger_TraceEx(t *testing.T) {
+	New().TraceEx(map[string]interface{}{
+		"thing": "stuff",
+	}, "test")
+}
+
 func TestVerbose(t *testing.T) {
 	Verbose("test")
 }
@@ -32,6 +46,20 @@ func TestVerbosef(t *testing.T) {
 
 func TestVerboseEx(t *testing.T) {
 	VerboseEx(map[string]interface{}{
+		"thing": "stuff",
+	}, "test")
+}
+
+func TestLogger_Verbose(t *testing.T) {
+	New().Verbose("test")
+}
+
+func TestLogger_Verbosef(t *testing.T) {
+	New().Verbosef("test %s", "format")
+}
+
+func TestLogger_VerboseEx(t *testing.T) {
+	New().VerboseEx(map[string]interface{}{
 		"thing": "stuff",
 	}, "test")
 }
@@ -50,6 +78,20 @@ func TestDebugEx(t *testing.T) {
 	}, "test")
 }
 
+func TestLogger_Debug(t *testing.T) {
+	New().Debug("test")
+}
+
+func TestLogger_Debugf(t *testing.T) {
+	New().Debugf("test %s", "format")
+}
+
+func TestLogger_DebugEx(t *testing.T) {
+	New().DebugEx(map[string]interface{}{
+		"thing": "stuff",
+	}, "test")
+}
+
 func TestInfo(t *testing.T) {
 	Info("test")
 }
@@ -60,6 +102,20 @@ func TestInfof(t *testing.T) {
 
 func TestInfoEx(t *testing.T) {
 	InfoEx(map[string]interface{}{
+		"thing": "stuff",
+	}, "test")
+}
+
+func TestLogger_Info(t *testing.T) {
+	New().Info("test")
+}
+
+func TestLogger_Infof(t *testing.T) {
+	New().Infof("test %s", "format")
+}
+
+func TestLogger_InfoEx(t *testing.T) {
+	New().InfoEx(map[string]interface{}{
 		"thing": "stuff",
 	}, "test")
 }
@@ -78,6 +134,20 @@ func TestWarningEx(t *testing.T) {
 	}, "test")
 }
 
+func TestLogger_Warning(t *testing.T) {
+	New().Warning("test")
+}
+
+func TestLogger_Warningf(t *testing.T) {
+	New().Warningf("test %s", "format")
+}
+
+func TestLogger_WarningEx(t *testing.T) {
+	New().WarningEx(map[string]interface{}{
+		"thing": "stuff",
+	}, "test")
+}
+
 func TestError(t *testing.T) {
 	Error("test")
 }
@@ -88,6 +158,20 @@ func TestErrorf(t *testing.T) {
 
 func TestErrorEx(t *testing.T) {
 	ErrorEx(map[string]interface{}{
+		"thing": "stuff",
+	}, "test")
+}
+
+func TestLogger_Error(t *testing.T) {
+	New().Error("test")
+}
+
+func TestLogger_Errorf(t *testing.T) {
+	New().Errorf("test %s", "format")
+}
+
+func TestLogger_ErrorEx(t *testing.T) {
+	New().ErrorEx(map[string]interface{}{
 		"thing": "stuff",
 	}, "test")
 }
@@ -106,6 +190,20 @@ func TestCriticalEx(t *testing.T) {
 	}, "test")
 }
 
+func TestLogger_Critical(t *testing.T) {
+	New().Critical("test")
+}
+
+func TestLogger_Criticalf(t *testing.T) {
+	New().Criticalf("test %s", "format")
+}
+
+func TestLogger_CriticalEx(t *testing.T) {
+	New().CriticalEx(map[string]interface{}{
+		"thing": "stuff",
+	}, "test")
+}
+
 func TestFatal(t *testing.T) {
 	Fatal("test")
 }
@@ -116,6 +214,20 @@ func TestFatalf(t *testing.T) {
 
 func TestFatalEx(t *testing.T) {
 	FatalEx(map[string]interface{}{
+		"thing": "stuff",
+	}, "test")
+}
+
+func TestLogger_Fatal(t *testing.T) {
+	New().Fatal("test")
+}
+
+func TestLogger_Fatalf(t *testing.T) {
+	New().Fatalf("test %s", "format")
+}
+
+func TestLogger_FatalEx(t *testing.T) {
+	New().FatalEx(map[string]interface{}{
 		"thing": "stuff",
 	}, "test")
 }

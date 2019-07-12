@@ -140,6 +140,20 @@ func Test{{.}}Ex(t *testing.T) {
 		"thing": "stuff",
 	}, "test")
 }
+
+func TestLogger_{{.}}(t *testing.T) {
+	New().{{.}}("test")
+}
+
+func TestLogger_{{.}}f(t *testing.T) {
+	New().{{.}}f("test %s", "format")
+}
+
+func TestLogger_{{.}}Ex(t *testing.T) {
+	New().{{.}}Ex(map[string]interface{}{
+		"thing": "stuff",
+	}, "test")
+}
 {{else}}
 // No levels
 {{end}}`
