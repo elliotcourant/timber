@@ -66,7 +66,7 @@ var (
 
 type Logger interface {
 	// Trace writes the provided string to the log.
-	Trace(msg string)
+	Trace(msg interface{})
 
 	// Tracef writes a formatted string using the arguments provided to the log.
 	Tracef(msg string, args ...interface{})
@@ -77,7 +77,7 @@ type Logger interface {
 	TraceEx(keys Keys, msg string, args ...interface{})
 
 	// Verbose writes the provided string to the log.
-	Verbose(msg string)
+	Verbose(msg interface{})
 
 	// Verbosef writes a formatted string using the arguments provided to the log.
 	Verbosef(msg string, args ...interface{})
@@ -88,7 +88,7 @@ type Logger interface {
 	VerboseEx(keys Keys, msg string, args ...interface{})
 
 	// Debug writes the provided string to the log.
-	Debug(msg string)
+	Debug(msg interface{})
 
 	// Debugf writes a formatted string using the arguments provided to the log.
 	Debugf(msg string, args ...interface{})
@@ -99,7 +99,7 @@ type Logger interface {
 	DebugEx(keys Keys, msg string, args ...interface{})
 
 	// Info writes the provided string to the log.
-	Info(msg string)
+	Info(msg interface{})
 
 	// Infof writes a formatted string using the arguments provided to the log.
 	Infof(msg string, args ...interface{})
@@ -110,7 +110,7 @@ type Logger interface {
 	InfoEx(keys Keys, msg string, args ...interface{})
 
 	// Warning writes the provided string to the log.
-	Warning(msg string)
+	Warning(msg interface{})
 
 	// Warningf writes a formatted string using the arguments provided to the log.
 	Warningf(msg string, args ...interface{})
@@ -121,7 +121,7 @@ type Logger interface {
 	WarningEx(keys Keys, msg string, args ...interface{})
 
 	// Error writes the provided string to the log.
-	Error(msg string)
+	Error(msg interface{})
 
 	// Errorf writes a formatted string using the arguments provided to the log.
 	Errorf(msg string, args ...interface{})
@@ -132,7 +132,7 @@ type Logger interface {
 	ErrorEx(keys Keys, msg string, args ...interface{})
 
 	// Critical writes the provided string to the log.
-	Critical(msg string)
+	Critical(msg interface{})
 
 	// Criticalf writes a formatted string using the arguments provided to the log.
 	Criticalf(msg string, args ...interface{})
@@ -143,7 +143,7 @@ type Logger interface {
 	CriticalEx(keys Keys, msg string, args ...interface{})
 
 	// Fatal writes the provided string to the log.
-	Fatal(msg string)
+	Fatal(msg interface{})
 
 	// Fatalf writes a formatted string using the arguments provided to the log.
 	Fatalf(msg string, args ...interface{})
@@ -166,7 +166,7 @@ type Logger interface {
 }
 
 // Trace writes the provided string to the log.
-func (l *logger) Trace(msg string) {
+func (l *logger) Trace(msg interface{}) {
 	l.log(l.stackDepth, Level_Trace, nil, msg)
 }
 
@@ -183,7 +183,7 @@ func (l *logger) TraceEx(keys Keys, msg string, args ...interface{}) {
 }
 
 // Verbose writes the provided string to the log.
-func (l *logger) Verbose(msg string) {
+func (l *logger) Verbose(msg interface{}) {
 	l.log(l.stackDepth, Level_Verbose, nil, msg)
 }
 
@@ -200,7 +200,7 @@ func (l *logger) VerboseEx(keys Keys, msg string, args ...interface{}) {
 }
 
 // Debug writes the provided string to the log.
-func (l *logger) Debug(msg string) {
+func (l *logger) Debug(msg interface{}) {
 	l.log(l.stackDepth, Level_Debug, nil, msg)
 }
 
@@ -217,7 +217,7 @@ func (l *logger) DebugEx(keys Keys, msg string, args ...interface{}) {
 }
 
 // Info writes the provided string to the log.
-func (l *logger) Info(msg string) {
+func (l *logger) Info(msg interface{}) {
 	l.log(l.stackDepth, Level_Info, nil, msg)
 }
 
@@ -234,7 +234,7 @@ func (l *logger) InfoEx(keys Keys, msg string, args ...interface{}) {
 }
 
 // Warning writes the provided string to the log.
-func (l *logger) Warning(msg string) {
+func (l *logger) Warning(msg interface{}) {
 	l.log(l.stackDepth, Level_Warning, nil, msg)
 }
 
@@ -251,7 +251,7 @@ func (l *logger) WarningEx(keys Keys, msg string, args ...interface{}) {
 }
 
 // Error writes the provided string to the log.
-func (l *logger) Error(msg string) {
+func (l *logger) Error(msg interface{}) {
 	l.log(l.stackDepth, Level_Error, nil, msg)
 }
 
@@ -268,7 +268,7 @@ func (l *logger) ErrorEx(keys Keys, msg string, args ...interface{}) {
 }
 
 // Critical writes the provided string to the log.
-func (l *logger) Critical(msg string) {
+func (l *logger) Critical(msg interface{}) {
 	l.log(l.stackDepth, Level_Critical, nil, msg)
 }
 
@@ -285,7 +285,7 @@ func (l *logger) CriticalEx(keys Keys, msg string, args ...interface{}) {
 }
 
 // Fatal writes the provided string to the log.
-func (l *logger) Fatal(msg string) {
+func (l *logger) Fatal(msg interface{}) {
 	l.log(l.stackDepth, Level_Fatal, nil, msg)
 }
 
@@ -302,7 +302,7 @@ func (l *logger) FatalEx(keys Keys, msg string, args ...interface{}) {
 }
 
 // Trace writes the provided string to the log.
-func Trace(msg string) {
+func Trace(msg interface{}) {
 	defaultLogger.log(defaultLogger.stackDepth, Level_Trace, nil, msg)
 }
 
@@ -319,7 +319,7 @@ func TraceEx(keys Keys, msg string, args ...interface{}) {
 }
 
 // Verbose writes the provided string to the log.
-func Verbose(msg string) {
+func Verbose(msg interface{}) {
 	defaultLogger.log(defaultLogger.stackDepth, Level_Verbose, nil, msg)
 }
 
@@ -336,7 +336,7 @@ func VerboseEx(keys Keys, msg string, args ...interface{}) {
 }
 
 // Debug writes the provided string to the log.
-func Debug(msg string) {
+func Debug(msg interface{}) {
 	defaultLogger.log(defaultLogger.stackDepth, Level_Debug, nil, msg)
 }
 
@@ -353,7 +353,7 @@ func DebugEx(keys Keys, msg string, args ...interface{}) {
 }
 
 // Info writes the provided string to the log.
-func Info(msg string) {
+func Info(msg interface{}) {
 	defaultLogger.log(defaultLogger.stackDepth, Level_Info, nil, msg)
 }
 
@@ -370,7 +370,7 @@ func InfoEx(keys Keys, msg string, args ...interface{}) {
 }
 
 // Warning writes the provided string to the log.
-func Warning(msg string) {
+func Warning(msg interface{}) {
 	defaultLogger.log(defaultLogger.stackDepth, Level_Warning, nil, msg)
 }
 
@@ -387,7 +387,7 @@ func WarningEx(keys Keys, msg string, args ...interface{}) {
 }
 
 // Error writes the provided string to the log.
-func Error(msg string) {
+func Error(msg interface{}) {
 	defaultLogger.log(defaultLogger.stackDepth, Level_Error, nil, msg)
 }
 
@@ -404,7 +404,7 @@ func ErrorEx(keys Keys, msg string, args ...interface{}) {
 }
 
 // Critical writes the provided string to the log.
-func Critical(msg string) {
+func Critical(msg interface{}) {
 	defaultLogger.log(defaultLogger.stackDepth, Level_Critical, nil, msg)
 }
 
@@ -421,7 +421,7 @@ func CriticalEx(keys Keys, msg string, args ...interface{}) {
 }
 
 // Fatal writes the provided string to the log.
-func Fatal(msg string) {
+func Fatal(msg interface{}) {
 	defaultLogger.log(defaultLogger.stackDepth, Level_Fatal, nil, msg)
 }
 

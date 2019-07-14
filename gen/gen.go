@@ -100,7 +100,7 @@ var (
 
 type Logger interface { {{range .Levels}}
 	// {{.Name}} writes the provided string to the log.
-	{{.Name}}(msg string)
+	{{.Name}}(msg interface{})
 
 	// {{.Name}}f writes a formatted string using the arguments provided to the log.
 	{{.Name}}f(msg string, args ...interface{})
@@ -123,7 +123,7 @@ type Logger interface { {{range .Levels}}
 }{{range .Levels}}
 
 // {{.Name}} writes the provided string to the log.
-func (l *logger) {{.Name}}(msg string) {
+func (l *logger) {{.Name}}(msg interface{}) {
 	l.log(l.stackDepth, Level_{{.Name}}, nil, msg)
 }
 
@@ -145,7 +145,7 @@ func (l *logger) {{.Name}}Ex(keys Keys, msg string, args ...interface{}) {
 {{range .Levels}}
 
 // {{.Name}} writes the provided string to the log.
-func {{.Name}}(msg string) {
+func {{.Name}}(msg interface{}) {
 	defaultLogger.log(defaultLogger.stackDepth, Level_{{.Name}}, nil, msg)
 }
 
