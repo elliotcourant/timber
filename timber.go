@@ -46,16 +46,28 @@ func keys(keys ...Keys) string {
 	if len(msg) == 0 {
 		return ""
 	}
-	return fmt.Sprintf("[ %s ]", strings.Join(msg, ", "))
+	return fmt.Sprintf("{ %s }", strings.Join(msg, ", "))
 }
 
 func (l *logger) log(stack int, lvl Level, m Keys, v ...interface{}) {
 	k := keys(l.keys, m)
+	foregroundColor, ok := foregroundColors[lvl]
+	var prefix interface{}
+	s := fmt.Sprintf("[%s]", shortLevelNames[lvl])
+	if ok {
+		prefix = foregroundColor(s)
+	} else {
+		prefix = s
+	}
+	backgroundColor, ok := backgroundColors[lvl]
+	if ok {
+		prefix = backgroundColor(s)
+	}
 	switch len(k) {
 	case 0:
-		fmt.Println(fmt.Sprintf("[%s]", strings.ToUpper(string(lvl))), CallerInfo(stack), fmt.Sprint(v...))
+		fmt.Println(prefix, CallerInfo(stack), fmt.Sprint(v...))
 	default:
-		fmt.Println(fmt.Sprintf("[%s]", strings.ToUpper(string(lvl))), CallerInfo(stack), k, fmt.Sprint(v...))
+		fmt.Println(prefix, CallerInfo(stack), k, fmt.Sprint(v...))
 	}
 }
 

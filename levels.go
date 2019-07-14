@@ -6,25 +6,66 @@ package timber
 
 import (
 	"fmt"
+	"github.com/logrusorgru/aurora"
 )
+
+type colorFunc func(arg interface{}) aurora.Value
 
 type Keys map[string]interface{}
 
-type Level string
+type Level int
 
 const (
-	Level_Trace    Level = "trace"
-	Level_Verbose        = "verbose"
-	Level_Debug          = "debug"
-	Level_Info           = "info"
-	Level_Warning        = "warning"
-	Level_Error          = "error"
-	Level_Critical       = "critical"
-	Level_Fatal          = "fatal"
+	Level_Trace    Level = 1
+	Level_Verbose        = 2
+	Level_Debug          = 3
+	Level_Info           = 4
+	Level_Warning        = 5
+	Level_Error          = 6
+	Level_Critical       = 7
+	Level_Fatal          = 8
+)
+
+var (
+	foregroundColors = map[Level]colorFunc{
+		Level_Trace:    aurora.BrightBlue,
+		Level_Verbose:  aurora.BrightCyan,
+		Level_Debug:    aurora.White,
+		Level_Info:     aurora.Green,
+		Level_Warning:  aurora.BrightYellow,
+		Level_Error:    aurora.Red,
+		Level_Critical: aurora.Bold,
+	}
+
+	backgroundColors = map[Level]colorFunc{
+		Level_Critical: aurora.BgRed,
+		Level_Fatal:    aurora.BgRed,
+	}
+
+	levelNames = map[Level]string{
+		Level_Trace:    "Trace",
+		Level_Verbose:  "Verbose",
+		Level_Debug:    "Debug",
+		Level_Info:     "Info",
+		Level_Warning:  "Warning",
+		Level_Error:    "Error",
+		Level_Critical: "Critical",
+		Level_Fatal:    "Fatal",
+	}
+
+	shortLevelNames = map[Level]string{
+		Level_Trace:    "TRCE",
+		Level_Verbose:  "VERB",
+		Level_Debug:    "DBUG",
+		Level_Info:     "INFO",
+		Level_Warning:  "WARN",
+		Level_Error:    "ERRR",
+		Level_Critical: "CRIT",
+		Level_Fatal:    "FATL",
+	}
 )
 
 type Logger interface {
-
 	// Trace writes the provided string to the log.
 	Trace(msg string)
 

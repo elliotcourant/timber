@@ -4,35 +4,35 @@
       "order": 1,
       "name": "Trace",
       "shortName": "TRCE",
-      "foregroundColor": "Gray",
+      "foregroundColor": "BrightBlue",
       "backgroundColor": null
     },
     {
       "order": 2,
       "name": "Verbose",
       "shortName": "VERB",
-      "foregroundColor": "LightGray",
+      "foregroundColor": "BrightCyan",
       "backgroundColor": null
     },
     {
       "order": 3,
       "name": "Debug",
       "shortName": "DBUG",
-      "foregroundColor": "LightGray",
+      "foregroundColor": "White",
       "backgroundColor": null
     },
     {
       "order": 4,
       "name": "Info",
       "shortName": "INFO",
-      "foregroundColor": "White",
+      "foregroundColor": "Green",
       "backgroundColor": null
     },
     {
       "order": 5,
       "name": "Warning",
       "shortName": "WARN",
-      "foregroundColor": "Yellow",
+      "foregroundColor": "BrightYellow",
       "backgroundColor": null
     },
     {
@@ -46,15 +46,15 @@
       "order": 7,
       "name": "Critical",
       "shortName": "CRIT",
-      "foregroundColor": "White",
+      "foregroundColor": "Bold",
       "backgroundColor": "Red"
     },
     {
       "order": 8,
       "name": "Fatal",
       "shortName": "FATL",
-      "foregroundColor": "Red",
-      "backgroundColor": "White"
+      "foregroundColor": null,
+      "backgroundColor": "Red"
     }
   ]
 }

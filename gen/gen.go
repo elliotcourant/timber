@@ -1,14 +1,24 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
+	"io/ioutil"
 	"os"
 	"strings"
 	"text/template"
 )
 
-type data struct {
-	Levels []string
+type LevelItem struct {
+	Order           int     `json:"order"`
+	Name            string  `json:"name"`
+	ShortName       string  `json:"shortName"`
+	ForegroundColor *string `json:"foregroundColor"`
+	BackgroundColor *string `json:"backgroundColor"`
+}
+
+type Data struct {
+	Levels []LevelItem
 }
 
 func main() {
@@ -16,27 +26,36 @@ func main() {
 		"ToLower": strings.ToLower,
 	}
 
-	var d data
-	var items string
-
 	var testFlag bool
+	var levelsPath string
 
-	flag.StringVar(&items, "levels", "", "List of levels")
+	flag.StringVar(&levelsPath, "path", "levels.json", "Path to levels.json file.")
 	flag.BoolVar(&testFlag, "test", false, "Generate tests")
-	flag.Parse()
 
-	if items != "" {
-		d.Levels = strings.Split(items, ",")
-	}
+	flag.Parse()
 
 	a := template.Must(template.New("1").Funcs(funcMap).Parse(levelsTemplate))
 	b := template.Must(template.New("2").Funcs(funcMap).Parse(testTemplate))
 
+	if levelsPath == "" {
+		panic("path cannot be blank")
+	}
+
+	var data Data
+
+	if j, err := ioutil.ReadFile(levelsPath); err != nil {
+		panic(err)
+	} else {
+		if err := json.Unmarshal(j, &data); err != nil {
+			panic(err)
+		}
+	}
+
 	switch testFlag {
 	case true:
-		b.Execute(os.Stdout, d)
+		b.Execute(os.Stdout, data)
 	case false:
-		a.Execute(os.Stdout, d)
+		a.Execute(os.Stdout, data)
 	}
 }
 
@@ -48,28 +67,48 @@ package timber
 
 import (
 	"fmt"
+	"github.com/logrusorgru/aurora"
 )
+
+type colorFunc func(arg interface{}) aurora.Value
 
 type Keys map[string]interface{}
 
-type Level string
+type Level int
 
 const ({{range $index, $level := .Levels}}
-	Level_{{$level}} {{if (eq $index 0)}} Level{{end}} = "{{ $level | ToLower }}"{{end}}
+	Level_{{$level.Name}}{{if (eq $index 0)}} Level{{end}} = {{$level.Order}}{{end}}
 )
 
-type Logger interface {
-{{range .Levels}}
-	// {{.}} writes the provided string to the log.
-	{{.}}(msg string)
+var (
+	foregroundColors = map[Level]colorFunc{ {{range .Levels}}{{ if .ForegroundColor }}
+		Level_{{.Name}}: aurora.{{.ForegroundColor}},{{end}}{{end}} 
+	}
 
-	// {{.}}f writes a formatted string using the arguments provided to the log.
-	{{.}}f(msg string, args ...interface{})
+	backgroundColors = map[Level]colorFunc{ {{range .Levels}}{{ if .BackgroundColor }}
+		Level_{{.Name}}: aurora.Bg{{.BackgroundColor}},{{end}}{{end}} 
+	}
 
-	// {{.}}Ex writes a formatted string using the arguments provided to the log
+	levelNames = map[Level]string{ {{range .Levels}}
+		Level_{{.Name}}: "{{.Name}}",{{end}}
+	}
+
+	shortLevelNames = map[Level]string{ {{range .Levels}}
+		Level_{{.Name}}: "{{.ShortName}}",{{end}}
+	}
+)
+
+type Logger interface { {{range .Levels}}
+	// {{.Name}} writes the provided string to the log.
+	{{.Name}}(msg string)
+
+	// {{.Name}}f writes a formatted string using the arguments provided to the log.
+	{{.Name}}f(msg string, args ...interface{})
+
+	// {{.Name}}Ex writes a formatted string using the arguments provided to the log
 	// but also will prefix the log message with they keys provided to help print
 	// runtime variables.
-	{{.}}Ex(keys Keys, msg string, args ...interface{})
+	{{.Name}}Ex(keys Keys, msg string, args ...interface{})
 {{end}}
 	// Log will write a raw entry to the log, it accepts an array of interfaces which will
 	// be converted to strings if they are not already.
@@ -83,21 +122,21 @@ type Logger interface {
 	With(keys Keys) Logger
 }{{range .Levels}}
 
-// {{.}} writes the provided string to the log.
-func (l *logger) {{.}}(msg string) {
-	l.log(l.stackDepth, Level_{{.}}, nil, msg)
+// {{.Name}} writes the provided string to the log.
+func (l *logger) {{.Name}}(msg string) {
+	l.log(l.stackDepth, Level_{{.Name}}, nil, msg)
 }
 
-// {{.}}f writes a formatted string using the arguments provided to the log.
-func (l *logger) {{.}}f(msg string, args ...interface{}) {
-	l.log(l.stackDepth, Level_{{.}}, nil, fmt.Sprintf(msg, args...))
+// {{.Name}}f writes a formatted string using the arguments provided to the log.
+func (l *logger) {{.Name}}f(msg string, args ...interface{}) {
+	l.log(l.stackDepth, Level_{{.Name}}, nil, fmt.Sprintf(msg, args...))
 }
 
-// {{.}}Ex writes a formatted string using the arguments provided to the log
+// {{.Name}}Ex writes a formatted string using the arguments provided to the log
 // but also will prefix the log message with they keys provided to help print
 // runtime variables.
-func (l *logger) {{.}}Ex(keys Keys, msg string, args ...interface{}) {
-	l.log(l.stackDepth, Level_{{.}}, keys, fmt.Sprintf(msg, args...))
+func (l *logger) {{.Name}}Ex(keys Keys, msg string, args ...interface{}) {
+	l.log(l.stackDepth, Level_{{.Name}}, keys, fmt.Sprintf(msg, args...))
 }{{else}}
 // No levels
 {{end}}
@@ -105,24 +144,25 @@ func (l *logger) {{.}}Ex(keys Keys, msg string, args ...interface{}) {
 
 {{range .Levels}}
 
-// {{.}} writes the provided string to the log.
-func {{.}}(msg string) {
-	defaultLogger.log(defaultLogger.stackDepth, Level_{{.}}, nil, msg)
+// {{.Name}} writes the provided string to the log.
+func {{.Name}}(msg string) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_{{.Name}}, nil, msg)
 }
 
-// {{.}}f writes a formatted string using the arguments provided to the log.
-func {{.}}f(msg string, args ...interface{}) {
-	defaultLogger.log(defaultLogger.stackDepth, Level_{{.}}, nil, fmt.Sprintf(msg, args...))
+// {{.Name}}f writes a formatted string using the arguments provided to the log.
+func {{.Name}}f(msg string, args ...interface{}) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_{{.Name}}, nil, fmt.Sprintf(msg, args...))
 }
 
-// {{.}}Ex writes a formatted string using the arguments provided to the log
+// {{.Name}}Ex writes a formatted string using the arguments provided to the log
 // but also will prefix the log message with they keys provided to help print
 // runtime variables.
-func {{.}}Ex(keys Keys, msg string, args ...interface{}) {
-	defaultLogger.log(defaultLogger.stackDepth, Level_{{.}}, keys, fmt.Sprintf(msg, args...))
+func {{.Name}}Ex(keys Keys, msg string, args ...interface{}) {
+	defaultLogger.log(defaultLogger.stackDepth, Level_{{.Name}}, keys, fmt.Sprintf(msg, args...))
 }{{else}}
 // No levels
-{{end}}`
+{{end}}
+`
 
 var testTemplate = `// Code generated by gen/gen.go - DO NOT EDIT.
 // This code can be regenerated by running the go generate below.
@@ -135,30 +175,30 @@ import (
 )
 {{range .Levels}}
 
-func Test{{.}}(t *testing.T) {
-	{{.}}("test")
+func Test{{.Name}}(t *testing.T) {
+	{{.Name}}("test")
 }
 
-func Test{{.}}f(t *testing.T) {
-	{{.}}f("test %s", "format")
+func Test{{.Name}}f(t *testing.T) {
+	{{.Name}}f("test %s", "format")
 }
 
-func Test{{.}}Ex(t *testing.T) {
-	{{.}}Ex(map[string]interface{}{
+func Test{{.Name}}Ex(t *testing.T) {
+	{{.Name}}Ex(map[string]interface{}{
 		"thing": "stuff",
 	}, "test")
 }
 
-func TestLogger_{{.}}(t *testing.T) {
-	New().{{.}}("test")
+func TestLogger_{{.Name}}(t *testing.T) {
+	New().{{.Name}}("test")
 }
 
-func TestLogger_{{.}}f(t *testing.T) {
-	New().{{.}}f("test %s", "format")
+func TestLogger_{{.Name}}f(t *testing.T) {
+	New().{{.Name}}f("test %s", "format")
 }
 
-func TestLogger_{{.}}Ex(t *testing.T) {
-	New().{{.}}Ex(map[string]interface{}{
+func TestLogger_{{.Name}}Ex(t *testing.T) {
+	New().{{.Name}}Ex(map[string]interface{}{
 		"thing": "stuff",
 	}, "test")
 }
