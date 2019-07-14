@@ -71,6 +71,12 @@ func (l *logger) log(stack int, lvl Level, m Keys, v ...interface{}) {
 	}
 }
 
+// SetDepth will change the number of stacks that will be skipped to find
+// the filepath and line number of the executed code.
+func (l *logger) SetDepth(depth int) {
+	l.stackDepth = defaultStackDepth + depth
+}
+
 // Log will write a raw entry to the log, it accepts an array of interfaces which will
 // be converted to strings if they are not already.
 func (l *logger) Log(lvl Level, v ...interface{}) {

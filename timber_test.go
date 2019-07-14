@@ -28,3 +28,9 @@ func TestLogger_Log(t *testing.T) {
 	logger := New()
 	logger.Log(Level_Debug, "test")
 }
+
+func TestLogger_SetDepth(t *testing.T) {
+	logger := New()
+	logger.SetDepth(1)
+	logger.Log(Level_Debug, "test")
+}

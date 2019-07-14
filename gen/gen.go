@@ -110,6 +110,10 @@ type Logger interface { {{range .Levels}}
 	// runtime variables.
 	{{.Name}}Ex(keys Keys, msg string, args ...interface{})
 {{end}}
+	// SetDepth will change the number of stacks that will be skipped to find
+	// the filepath and line number of the executed code.
+	SetDepth(depth int)
+
 	// Log will write a raw entry to the log, it accepts an array of interfaces which will
 	// be converted to strings if they are not already.
 	Log(lvl Level, v ...interface{})
