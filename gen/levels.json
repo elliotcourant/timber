@@ -1,48 +1,56 @@
 {
   "levels": [
     {
+      "order": 1,
       "name": "Trace",
       "shortName": "TRCE",
       "foregroundColor": "Gray",
       "backgroundColor": null
     },
     {
+      "order": 2,
       "name": "Verbose",
       "shortName": "VERB",
       "foregroundColor": "LightGray",
       "backgroundColor": null
     },
     {
+      "order": 3,
       "name": "Debug",
       "shortName": "DBUG",
       "foregroundColor": "LightGray",
       "backgroundColor": null
     },
     {
+      "order": 4,
       "name": "Info",
       "shortName": "INFO",
       "foregroundColor": "White",
       "backgroundColor": null
     },
     {
+      "order": 5,
       "name": "Warning",
       "shortName": "WARN",
       "foregroundColor": "Yellow",
       "backgroundColor": null
     },
     {
+      "order": 6,
       "name": "Error",
       "shortName": "ERRR",
       "foregroundColor": "Red",
       "backgroundColor": null
     },
     {
+      "order": 7,
       "name": "Critical",
       "shortName": "CRIT",
       "foregroundColor": "White",
       "backgroundColor": "Red"
     },
     {
+      "order": 8,
       "name": "Fatal",
       "shortName": "FATL",
       "foregroundColor": "Red",

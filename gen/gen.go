@@ -27,7 +27,6 @@ func main() {
 
 	if items != "" {
 		d.Levels = strings.Split(items, ",")
-		// sort.Strings(d.Levels)
 	}
 
 	a := template.Must(template.New("1").Funcs(funcMap).Parse(levelsTemplate))
