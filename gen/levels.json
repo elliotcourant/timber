@@ -46,8 +46,8 @@
       "order": 7,
       "name": "Critical",
       "shortName": "CRIT",
-      "foregroundColor": "Bold",
-      "backgroundColor": "Red"
+      "foregroundColor": null,
+      "backgroundColor": "BrightRed"
     },
     {
       "order": 8,

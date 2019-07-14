@@ -28,17 +28,16 @@ const (
 
 var (
 	foregroundColors = map[Level]colorFunc{
-		Level_Trace:    aurora.BrightBlue,
-		Level_Verbose:  aurora.BrightCyan,
-		Level_Debug:    aurora.White,
-		Level_Info:     aurora.Green,
-		Level_Warning:  aurora.BrightYellow,
-		Level_Error:    aurora.Red,
-		Level_Critical: aurora.Bold,
+		Level_Trace:   aurora.BrightBlue,
+		Level_Verbose: aurora.BrightCyan,
+		Level_Debug:   aurora.White,
+		Level_Info:    aurora.Green,
+		Level_Warning: aurora.BrightYellow,
+		Level_Error:   aurora.Red,
 	}
 
 	backgroundColors = map[Level]colorFunc{
-		Level_Critical: aurora.BgRed,
+		Level_Critical: aurora.BgBrightRed,
 		Level_Fatal:    aurora.BgRed,
 	}
 
