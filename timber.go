@@ -64,7 +64,9 @@ func (l *logger) log(stack int, lvl Level, m Keys, v ...interface{}) {
 	if lvl < l.level {
 		return
 	}
+	l.withLock.Lock()
 	k := keys(l.keys, m)
+	l.withLock.Unlock()
 	foregroundColor, ok := foregroundColors[lvl]
 	var prefix interface{}
 	s := fmt.Sprintf("[%s]", shortLevelNames[lvl])
