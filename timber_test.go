@@ -2,6 +2,7 @@ package timber
 
 import (
 	"github.com/stretchr/testify/assert"
+	"sync"
 	"testing"
 )
 
@@ -91,4 +92,37 @@ func TestGetDefaultLevel(t *testing.T) {
 	finalDefault := GetDefaultLevel()
 	assert.Equal(t, newDefault, finalDefault)
 	assert.NotEqual(t, originalDefault, finalDefault)
+}
+
+func TestConcurrent(t *testing.T) {
+	t.Run("normal", func(t *testing.T) {
+		log := New()
+		numberOfRoutines := 100
+		wg := new(sync.WaitGroup)
+		wg.Add(numberOfRoutines)
+		for i := 0; i < numberOfRoutines; i++ {
+			go func(i int, lg Logger) {
+				defer wg.Done()
+				lg.With(Keys{
+					"thread": i,
+				}).Infof("this is a message")
+			}(i, log)
+		}
+		wg.Wait()
+	})
+
+	t.Run("global logger", func(t *testing.T) {
+		numberOfRoutines := 100
+		wg := new(sync.WaitGroup)
+		wg.Add(numberOfRoutines)
+		for i := 0; i < numberOfRoutines; i++ {
+			go func(i int) {
+				defer wg.Done()
+				With(Keys{
+					"thread": i,
+				}).Infof("this is a message")
+			}(i)
+		}
+		wg.Wait()
+	})
 }

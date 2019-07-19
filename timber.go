@@ -3,6 +3,7 @@ package timber
 import (
 	"fmt"
 	"strings"
+	"sync"
 )
 
 const (
@@ -37,6 +38,7 @@ type logger struct {
 	stackDepth int
 	keys       Keys
 	level      Level
+	withLock   sync.Mutex
 }
 
 func keys(keys ...Keys) string {
@@ -83,6 +85,16 @@ func (l *logger) log(stack int, lvl Level, m Keys, v ...interface{}) {
 	}
 }
 
+func (l *logger) clone() *logger {
+	l.withLock.Lock()
+	defer l.withLock.Unlock()
+	return &logger{
+		stackDepth: l.stackDepth,
+		level:      l.level,
+		keys:       l.keys,
+	}
+}
+
 // SetDepth will change the number of stacks that will be skipped to find
 // the filepath and line number of the executed code.
 func (l *logger) SetDepth(depth int) {
@@ -101,11 +113,11 @@ func (l *logger) Log(lvl Level, v ...interface{}) {
 // This means that you can chain multiple of these together to add/remove keys that
 // are written with every message.
 func (l *logger) With(keys Keys) Logger {
-	lg := *l
+	lg := l.clone()
 	for k, v := range keys {
 		lg.keys[k] = v
 	}
-	return &lg
+	return lg
 }
 
 // SetLevel will set the minimum message level that will be output to stdout.
