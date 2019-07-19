@@ -47,7 +47,7 @@ func keys(keys ...Keys) string {
 			if v == nil {
 				continue
 			}
-			msg = append(msg, fmt.Sprintf(`%s: %v`, k, v))
+			msg = append(msg, fmt.Sprintf(`[%s]: %v`, k, v))
 		}
 	}
 	if len(msg) == 0 {

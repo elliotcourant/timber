@@ -48,6 +48,7 @@ func TestLogger_SetLevel(t *testing.T) {
 }
 
 func TestLogger_GetLevel(t *testing.T) {
+	SetDefaultLevel(0)
 	logger := New()
 	newLevel := Level_Warning
 	firstLevel := logger.GetLevel()
@@ -64,6 +65,7 @@ func TestSetLevel(t *testing.T) {
 }
 
 func TestGetLevel(t *testing.T) {
+	SetDefaultLevel(0)
 	newLevel := Level_Warning
 	firstLevel := GetLevel()
 	SetLevel(newLevel)
@@ -73,6 +75,7 @@ func TestGetLevel(t *testing.T) {
 }
 
 func TestSetDefaultLevel(t *testing.T) {
+	SetDefaultLevel(0)
 	newDefault := Level_Warning
 	SetDefaultLevel(newDefault)
 	logger := New()
@@ -81,6 +84,7 @@ func TestSetDefaultLevel(t *testing.T) {
 }
 
 func TestGetDefaultLevel(t *testing.T) {
+	SetDefaultLevel(0)
 	originalDefault := GetDefaultLevel()
 	newDefault := Level_Warning
 	SetDefaultLevel(newDefault)
