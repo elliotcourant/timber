@@ -17,13 +17,13 @@ type Level int
 
 const (
 	Level_Trace    Level = 1
-	Level_Verbose        = 2
-	Level_Debug          = 3
-	Level_Info           = 4
-	Level_Warning        = 5
-	Level_Error          = 6
-	Level_Critical       = 7
-	Level_Fatal          = 8
+	Level_Verbose  Level = 2
+	Level_Debug    Level = 3
+	Level_Info     Level = 4
+	Level_Warning  Level = 5
+	Level_Error    Level = 6
+	Level_Critical Level = 7
+	Level_Fatal    Level = 8
 )
 
 var (
@@ -167,6 +167,15 @@ type Logger interface {
 	// This means that you can chain multiple of these together to add/remove keys that
 	// are written with every message.
 	With(keys Keys) Logger
+
+	// SetLevel will set the minimum message level that will be output to stdout.
+	// This level is inherited by new logging instances created via With. But does
+	// not affect completely new logging instances.
+	SetLevel(lvl Level)
+
+	// GetLevel will return the current minimum logging level for this instance of
+	// the logger object.
+	GetLevel() Level
 }
 
 // Trace writes the provided string to the log.

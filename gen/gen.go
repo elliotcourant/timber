@@ -77,7 +77,7 @@ type Keys map[string]interface{}
 type Level int
 
 const ({{range $index, $level := .Levels}}
-	Level_{{$level.Name}}{{if (eq $index 0)}} Level{{end}} = {{$level.Order}}{{end}}
+	Level_{{$level.Name}} Level = {{$level.Order}}{{end}}
 )
 
 var (
@@ -124,6 +124,15 @@ type Logger interface { {{range .Levels}}
 	// This means that you can chain multiple of these together to add/remove keys that
 	// are written with every message.
 	With(keys Keys) Logger
+
+	// SetLevel will set the minimum message level that will be output to stdout.
+	// This level is inherited by new logging instances created via With. But does
+	// not affect completely new logging instances.
+	SetLevel(lvl Level)
+
+	// GetLevel will return the current minimum logging level for this instance of
+	// the logger object.
+	GetLevel() Level
 }{{range .Levels}}
 
 // {{.Name}} writes the provided string to the log.
