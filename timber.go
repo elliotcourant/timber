@@ -12,6 +12,7 @@ const (
 
 var (
 	defaultLevel = Level(0)
+	globalSync   sync.Mutex
 )
 
 var (
@@ -64,9 +65,7 @@ func (l *logger) log(stack int, lvl Level, m Keys, v ...interface{}) {
 	if lvl < l.level {
 		return
 	}
-	l.withLock.Lock()
 	k := keys(l.keys, m)
-	l.withLock.Unlock()
 	foregroundColor, ok := foregroundColors[lvl]
 	var prefix interface{}
 	s := fmt.Sprintf("[%s]", shortLevelNames[lvl])
@@ -115,7 +114,11 @@ func (l *logger) Log(lvl Level, v ...interface{}) {
 // This means that you can chain multiple of these together to add/remove keys that
 // are written with every message.
 func (l *logger) With(keys Keys) Logger {
+	globalSync.Lock()
+	defer globalSync.Unlock()
 	lg := l.clone()
+	lg.withLock.Lock()
+	defer lg.withLock.Unlock()
 	for k, v := range keys {
 		lg.keys[k] = v
 	}
