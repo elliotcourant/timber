@@ -39,7 +39,7 @@ type logger struct {
 	stackDepth int
 	keys       Keys
 	level      Level
-	withLock   sync.Mutex
+	withLock   sync.RWMutex
 }
 
 func keys(keys ...Keys) string {
@@ -62,7 +62,7 @@ func keys(keys ...Keys) string {
 func (l *logger) log(stack int, lvl Level, m Keys, v ...interface{}) {
 	// If the message is below our level threshold then do not write it to
 	// stdout.
-	if lvl < l.level {
+	if lvl < l.GetLevel() {
 		return
 	}
 	k := keys(l.keys, m)
@@ -129,12 +129,16 @@ func (l *logger) With(keys Keys) Logger {
 // This level is inherited by new logging instances created via With. But does
 // not affect completely new logging instances.
 func (l *logger) SetLevel(lvl Level) {
+	l.withLock.Lock()
+	defer l.withLock.Unlock()
 	l.level = lvl
 }
 
 // GetLevel will return the current minimum logging level for this instance of
 // the logger object.
 func (l *logger) GetLevel() Level {
+	l.withLock.RLock()
+	defer l.withLock.RUnlock()
 	return l.level
 }
 
