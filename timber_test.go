@@ -143,7 +143,7 @@ func TestConcurrent(t *testing.T) {
 	})
 
 	t.Run("global logger levels changing concurrently", func(t *testing.T) {
-		numberOfRoutines := 10000
+		numberOfRoutines := 1000
 		wg := new(sync.WaitGroup)
 		wg.Add(numberOfRoutines)
 		SetLevel(Level_Error)
