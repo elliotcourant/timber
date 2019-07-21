@@ -141,4 +141,27 @@ func TestConcurrent(t *testing.T) {
 		}
 		wg.Wait()
 	})
+
+	t.Run("global logger levels changing concurrently", func(t *testing.T) {
+		numberOfRoutines := 10000
+		wg := new(sync.WaitGroup)
+		wg.Add(numberOfRoutines)
+		SetLevel(Level_Error)
+		for i := 0; i < numberOfRoutines; i++ {
+			go func(i int) {
+				defer wg.Done()
+				go func() {
+					if GetLevel() == Level_Critical {
+						SetLevel(Level_Error)
+					} else {
+						SetLevel(Level_Critical)
+					}
+				}()
+				With(Keys{
+					"thread": i,
+				}).Infof("this is a message")
+			}(i)
+		}
+		wg.Wait()
+	})
 }
