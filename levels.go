@@ -167,6 +167,8 @@ type Logger interface {
 	// This means that you can chain multiple of these together to add/remove keys that
 	// are written with every message.
 	With(keys Keys) Logger
+
+	Prefix(prefix string) Logger
 }
 
 // Trace writes the provided string to the log.

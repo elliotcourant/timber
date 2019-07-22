@@ -26,6 +26,21 @@ func TestWith(t *testing.T) {
 	})
 }
 
+func TestPrefix(t *testing.T) {
+	t.Run("normal", func(t *testing.T) {
+		With(map[string]interface{}{
+			"things": "stuff",
+		}).Prefix("12.0.0.1:54313").Debug("test")
+	})
+
+	t.Run("with null value", func(t *testing.T) {
+		With(map[string]interface{}{
+			"things":      "stuff",
+			"otherThings": nil,
+		}).Prefix("12.0.0.1:54313").Debug("test")
+	})
+}
+
 func TestLogger_Log(t *testing.T) {
 	logger := New()
 	logger.Log(Level_Debug, "test")

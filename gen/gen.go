@@ -124,6 +124,9 @@ type Logger interface { {{range .Levels}}
 	// This means that you can chain multiple of these together to add/remove keys that
 	// are written with every message.
 	With(keys Keys) Logger
+
+	// Prefix will add a small string before the file path.
+	Prefix(prefix string) Logger
 }{{range .Levels}}
 
 // {{.Name}} writes the provided string to the log.

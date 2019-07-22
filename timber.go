@@ -2,6 +2,7 @@ package timber
 
 import (
 	"fmt"
+	"github.com/logrusorgru/aurora"
 	"strings"
 	"sync"
 )
@@ -43,6 +44,9 @@ type logger struct {
 	stackDepth int
 	keys       Keys
 	keysLock   sync.RWMutex
+
+	prefix     string
+	prefixLock sync.RWMutex
 }
 
 func (l *logger) getKeysString(keys Keys) string {
@@ -55,13 +59,19 @@ func (l *logger) getKeysString(keys Keys) string {
 			if v == nil {
 				continue
 			}
-			msg = append(msg, fmt.Sprintf(`[%s]: %v`, k, v))
+			msg = append(msg, fmt.Sprintf(`%s: %v`, k, aurora.White(v)))
 		}
 	}
 	if len(msg) == 0 {
 		return ""
 	}
-	return fmt.Sprintf("{ %s }", strings.Join(msg, ", "))
+	return fmt.Sprint(aurora.BrightBlack("{ "), strings.Join(msg, ", "), aurora.BrightBlack(" }"))
+}
+
+func (l *logger) getPrefixString() string {
+	l.prefixLock.RLock()
+	defer l.prefixLock.RUnlock()
+	return l.prefix
 }
 
 func (l *logger) log(stack int, lvl Level, m Keys, v ...interface{}) {
@@ -71,6 +81,7 @@ func (l *logger) log(stack int, lvl Level, m Keys, v ...interface{}) {
 		return
 	}
 	k := l.getKeysString(m)
+	p := l.getPrefixString()
 	foregroundColor, ok := foregroundColors[lvl]
 	var prefix interface{}
 	s := fmt.Sprintf("[%s]", shortLevelNames[lvl])
@@ -83,12 +94,18 @@ func (l *logger) log(stack int, lvl Level, m Keys, v ...interface{}) {
 	if ok {
 		prefix = backgroundColor(s)
 	}
-	switch len(k) {
-	case 0:
-		fmt.Println(prefix, CallerInfo(stack), fmt.Sprint(v...))
-	default:
-		fmt.Println(prefix, CallerInfo(stack), k, fmt.Sprint(v...))
+	items := []interface{}{
+		prefix,
 	}
+	if len(p) > 0 {
+		items = append(items, aurora.White(fmt.Sprintf("[%s]", p)))
+	}
+	items = append(items, CallerInfo(stack))
+	if len(k) > 0 {
+		items = append(items, k, aurora.BrightBlack("|"))
+	}
+	items = append(items, fmt.Sprint(v...))
+	fmt.Println(items...)
 }
 
 // SetDepth will change the number of stacks that will be skipped to find
@@ -119,6 +136,14 @@ func (l *logger) With(keys Keys) Logger {
 		lg.keys[k] = v
 	}
 	return lg
+}
+
+// Prefix will add a small string before the file path.
+func (l *logger) Prefix(prefix string) Logger {
+	l.prefixLock.Lock()
+	defer l.prefixLock.Unlock()
+	l.prefix = prefix
+	return l
 }
 
 func With(keys Keys) Logger {
