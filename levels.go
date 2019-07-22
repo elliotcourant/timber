@@ -167,15 +167,6 @@ type Logger interface {
 	// This means that you can chain multiple of these together to add/remove keys that
 	// are written with every message.
 	With(keys Keys) Logger
-
-	// SetLevel will set the minimum message level that will be output to stdout.
-	// This level is inherited by new logging instances created via With. But does
-	// not affect completely new logging instances.
-	SetLevel(lvl Level)
-
-	// GetLevel will return the current minimum logging level for this instance of
-	// the logger object.
-	GetLevel() Level
 }
 
 // Trace writes the provided string to the log.

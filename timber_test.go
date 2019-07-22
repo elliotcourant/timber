@@ -41,24 +41,6 @@ func TestLog(t *testing.T) {
 	Log(Level_Debug, "test")
 }
 
-func TestLogger_SetLevel(t *testing.T) {
-	logger := New()
-	logger.SetLevel(Level_Info)
-	logger.Log(Level_Debug, "test")   // Will not be written.
-	logger.Log(Level_Warning, "test") // Will be written.
-}
-
-func TestLogger_GetLevel(t *testing.T) {
-	SetDefaultLevel(0)
-	logger := New()
-	newLevel := Level_Warning
-	firstLevel := logger.GetLevel()
-	logger.SetLevel(newLevel)
-	finalLevel := logger.GetLevel()
-	assert.Equal(t, newLevel, finalLevel)
-	assert.NotEqual(t, firstLevel, finalLevel)
-}
-
 func TestSetLevel(t *testing.T) {
 	SetLevel(Level_Info)
 	Log(Level_Debug, "test")   // Will not be written.
@@ -66,32 +48,13 @@ func TestSetLevel(t *testing.T) {
 }
 
 func TestGetLevel(t *testing.T) {
-	SetDefaultLevel(0)
+	SetLevel(0)
 	newLevel := Level_Warning
 	firstLevel := GetLevel()
 	SetLevel(newLevel)
 	finalLevel := GetLevel()
 	assert.Equal(t, newLevel, finalLevel)
 	assert.NotEqual(t, firstLevel, finalLevel)
-}
-
-func TestSetDefaultLevel(t *testing.T) {
-	SetDefaultLevel(0)
-	newDefault := Level_Warning
-	SetDefaultLevel(newDefault)
-	logger := New()
-	level := logger.GetLevel()
-	assert.Equal(t, newDefault, level)
-}
-
-func TestGetDefaultLevel(t *testing.T) {
-	SetDefaultLevel(0)
-	originalDefault := GetDefaultLevel()
-	newDefault := Level_Warning
-	SetDefaultLevel(newDefault)
-	finalDefault := GetDefaultLevel()
-	assert.Equal(t, newDefault, finalDefault)
-	assert.NotEqual(t, originalDefault, finalDefault)
 }
 
 func TestConcurrent(t *testing.T) {
@@ -147,21 +110,39 @@ func TestConcurrent(t *testing.T) {
 		wg := new(sync.WaitGroup)
 		wg.Add(numberOfRoutines)
 		SetLevel(Level_Error)
+		var done struct {
+			done     bool
+			doneSync sync.RWMutex
+		}
+		go func() {
+			for {
+				if GetLevel() == Level_Critical {
+					SetLevel(Level_Error)
+				} else {
+					SetLevel(Level_Critical)
+				}
+
+				if func() bool {
+					done.doneSync.RLock()
+					defer done.doneSync.RUnlock()
+					return done.done
+				}() {
+					return
+				}
+			}
+		}()
+		l := New()
 		for i := 0; i < numberOfRoutines; i++ {
 			go func(i int) {
 				defer wg.Done()
-				go func() {
-					if GetLevel() == Level_Critical {
-						SetLevel(Level_Error)
-					} else {
-						SetLevel(Level_Critical)
-					}
-				}()
-				With(Keys{
+				l.With(Keys{
 					"thread": i,
 				}).Infof("this is a message")
 			}(i)
 		}
 		wg.Wait()
+		done.doneSync.Lock()
+		done.done = true
+		done.doneSync.Unlock()
 	})
 }

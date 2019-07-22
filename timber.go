@@ -11,8 +11,8 @@ const (
 )
 
 var (
-	defaultLevel = Level(0)
-	globalSync   sync.Mutex
+	level     = Level(0)
+	levelSync sync.RWMutex
 )
 
 var (
@@ -23,7 +23,6 @@ func init() {
 	defaultLogger = &logger{
 		stackDepth: defaultStackDepth,
 		keys:       make(Keys),
-		level:      defaultLevel,
 	}
 }
 
@@ -31,20 +30,26 @@ func New() Logger {
 	return &logger{
 		stackDepth: defaultStackDepth,
 		keys:       make(Keys),
-		level:      defaultLevel,
 	}
+}
+
+func shouldLog(lvl Level) bool {
+	levelSync.RLock()
+	defer levelSync.RUnlock()
+	return lvl >= level
 }
 
 type logger struct {
 	stackDepth int
 	keys       Keys
-	level      Level
-	withLock   sync.RWMutex
+	keysLock   sync.RWMutex
 }
 
-func keys(keys ...Keys) string {
+func (l *logger) getKeysString(keys Keys) string {
+	l.keysLock.RLock()
+	defer l.keysLock.RUnlock()
 	msg := make([]string, 0)
-	for _, keySet := range keys {
+	for _, keySet := range append([]Keys{}, keys, l.keys) {
 		for k, v := range keySet {
 			// Exclude items where the value is null.
 			if v == nil {
@@ -62,10 +67,10 @@ func keys(keys ...Keys) string {
 func (l *logger) log(stack int, lvl Level, m Keys, v ...interface{}) {
 	// If the message is below our level threshold then do not write it to
 	// stdout.
-	if lvl < l.GetLevel() {
+	if !shouldLog(lvl) {
 		return
 	}
-	k := keys(l.keys, m)
+	k := l.getKeysString(m)
 	foregroundColor, ok := foregroundColors[lvl]
 	var prefix interface{}
 	s := fmt.Sprintf("[%s]", shortLevelNames[lvl])
@@ -83,16 +88,6 @@ func (l *logger) log(stack int, lvl Level, m Keys, v ...interface{}) {
 		fmt.Println(prefix, CallerInfo(stack), fmt.Sprint(v...))
 	default:
 		fmt.Println(prefix, CallerInfo(stack), k, fmt.Sprint(v...))
-	}
-}
-
-func (l *logger) clone() *logger {
-	l.withLock.Lock()
-	defer l.withLock.Unlock()
-	return &logger{
-		stackDepth: l.stackDepth,
-		level:      l.level,
-		keys:       l.keys,
 	}
 }
 
@@ -114,32 +109,16 @@ func (l *logger) Log(lvl Level, v ...interface{}) {
 // This means that you can chain multiple of these together to add/remove keys that
 // are written with every message.
 func (l *logger) With(keys Keys) Logger {
-	globalSync.Lock()
-	defer globalSync.Unlock()
-	lg := l.clone()
-	lg.withLock.Lock()
-	defer lg.withLock.Unlock()
+	l.keysLock.Lock()
+	defer l.keysLock.Unlock()
+	lg := &logger{
+		stackDepth: l.stackDepth,
+		keys:       l.keys,
+	}
 	for k, v := range keys {
 		lg.keys[k] = v
 	}
 	return lg
-}
-
-// SetLevel will set the minimum message level that will be output to stdout.
-// This level is inherited by new logging instances created via With. But does
-// not affect completely new logging instances.
-func (l *logger) SetLevel(lvl Level) {
-	l.withLock.Lock()
-	defer l.withLock.Unlock()
-	l.level = lvl
-}
-
-// GetLevel will return the current minimum logging level for this instance of
-// the logger object.
-func (l *logger) GetLevel() Level {
-	l.withLock.RLock()
-	defer l.withLock.RUnlock()
-	return l.level
 }
 
 func With(keys Keys) Logger {
@@ -150,27 +129,17 @@ func With(keys Keys) Logger {
 // This level is inherited by new logging instances created via With. But does
 // not affect completely new logging instances.
 func SetLevel(lvl Level) {
-	defaultLogger.SetLevel(lvl)
+	levelSync.Lock()
+	defer levelSync.Unlock()
+	level = lvl
 }
 
 // GetLevel will return the current minimum logging level for the global
 // logger.
 func GetLevel() Level {
-	return defaultLogger.GetLevel()
-}
-
-// SetDefaultLevel will define the level that is used for new loggers created.
-// It will not change how the global logger or loggers that already exist behave.
-// Existing loggers should be defined explicitly. The global logger should also
-// be changed directly..
-func SetDefaultLevel(lvl Level) {
-	defaultLevel = lvl
-}
-
-// GetDefaultLevel will return the current level that is used when new loggers
-// are created.
-func GetDefaultLevel() Level {
-	return defaultLevel
+	levelSync.RLock()
+	defer levelSync.RUnlock()
+	return level
 }
 
 // Log will write a raw entry to the log, it accepts an array of interfaces which will
