@@ -132,6 +132,7 @@ func (l *logger) With(keys Keys) Logger {
 	lg := &logger{
 		stackDepth: l.stackDepth,
 		keys:       l.keys,
+		prefix:     l.prefix,
 	}
 	for k, v := range keys {
 		lg.keys[k] = v
