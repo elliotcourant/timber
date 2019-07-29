@@ -155,7 +155,7 @@ type Logger interface {
 
 	// SetDepth will change the number of stacks that will be skipped to find
 	// the filepath and line number of the executed code.
-	SetDepth(depth int)
+	SetDepth(depth int) Logger
 
 	// Log will write a raw entry to the log, it accepts an array of interfaces which will
 	// be converted to strings if they are not already.
@@ -168,6 +168,7 @@ type Logger interface {
 	// are written with every message.
 	With(keys Keys) Logger
 
+	// Prefix will add a small string before the file path.
 	Prefix(prefix string) Logger
 }
 
