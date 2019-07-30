@@ -1,6 +1,7 @@
 package timber
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"sync"
 	"testing"
@@ -153,6 +154,49 @@ func TestConcurrent(t *testing.T) {
 				l.With(Keys{
 					"thread": i,
 				}).Infof("this is a message")
+			}(i)
+		}
+		wg.Wait()
+		done.doneSync.Lock()
+		done.done = true
+		done.doneSync.Unlock()
+	})
+
+	t.Run("logger levels changing concurrently", func(t *testing.T) {
+		numberOfRoutines := 1000
+		wg := new(sync.WaitGroup)
+		wg.Add(numberOfRoutines)
+		SetLevel(Level_Verbose)
+		var done struct {
+			done     bool
+			doneSync sync.RWMutex
+		}
+		go func() {
+			for {
+				if GetLevel() == Level_Debug {
+					SetLevel(Level_Verbose)
+				} else {
+					SetLevel(Level_Debug)
+				}
+
+				if func() bool {
+					done.doneSync.RLock()
+					defer done.doneSync.RUnlock()
+					return done.done
+				}() {
+					return
+				}
+			}
+		}()
+		l := New()
+		for i := 0; i < numberOfRoutines; i++ {
+			go func(i int) {
+				defer wg.Done()
+				f := l.With(Keys{
+					fmt.Sprintf("thread-%d", i): i,
+				})
+				f.Infof("test")
+				f.Debugf("test")
 			}(i)
 		}
 		wg.Wait()

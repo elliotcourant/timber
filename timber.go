@@ -129,15 +129,20 @@ func (l *logger) Log(lvl Level, v ...interface{}) {
 func (l *logger) With(keys Keys) Logger {
 	l.keysLock.Lock()
 	defer l.keysLock.Unlock()
-	lg := &logger{
+	lg := logger{
 		stackDepth: l.stackDepth,
-		keys:       l.keys,
+		keys:       map[string]interface{}{},
 		prefix:     l.prefix,
+	}
+	lg.keysLock.Lock()
+	defer lg.keysLock.Unlock()
+	for k, v := range lg.keys {
+		lg.keys[k] = v
 	}
 	for k, v := range keys {
 		lg.keys[k] = v
 	}
-	return lg
+	return &lg
 }
 
 // Prefix will add a small string before the file path.
