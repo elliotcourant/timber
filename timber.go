@@ -1,6 +1,7 @@
 package timber
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/logrusorgru/aurora"
 	"strings"
@@ -105,7 +106,8 @@ func (l *logger) log(stack int, lvl Level, m Keys, v ...interface{}) {
 		items = append(items, k, aurora.BrightBlack("|"))
 	}
 	items = append(items, fmt.Sprint(v...))
-	fmt.Println(items...)
+	msg := string(bytes.TrimSuffix([]byte(fmt.Sprint(items...)), []byte{'\n'}))
+	fmt.Println(msg)
 }
 
 // SetDepth will change the number of stacks that will be skipped to find
