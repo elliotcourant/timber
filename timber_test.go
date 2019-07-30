@@ -57,6 +57,11 @@ func TestLog(t *testing.T) {
 	Log(Level_Debug, "test")
 }
 
+func TestLogNewline(t *testing.T) {
+	Log(Level_Debug, `test
+`)
+}
+
 func TestSetLevel(t *testing.T) {
 	SetLevel(Level_Info)
 	Log(Level_Debug, "test")   // Will not be written.

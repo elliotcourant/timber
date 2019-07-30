@@ -95,18 +95,18 @@ func (l *logger) log(stack int, lvl Level, m Keys, v ...interface{}) {
 	if ok {
 		prefix = backgroundColor(s)
 	}
-	items := []interface{}{
-		prefix,
+	items := []string{
+		fmt.Sprint(prefix),
 	}
 	if len(p) > 0 {
-		items = append(items, aurora.White(fmt.Sprintf("[%s]", p)))
+		items = append(items, fmt.Sprint(aurora.White(fmt.Sprintf("[%s]", p))))
 	}
 	items = append(items, CallerInfo(stack))
 	if len(k) > 0 {
-		items = append(items, k, aurora.BrightBlack("|"))
+		items = append(items, k, fmt.Sprint(aurora.BrightBlack("|")))
 	}
 	items = append(items, fmt.Sprint(v...))
-	msg := string(bytes.TrimSuffix([]byte(fmt.Sprint(items...)), []byte{'\n'}))
+	msg := string(bytes.TrimSuffix([]byte(strings.Join(items, " ")), []byte{'\n'}))
 	fmt.Println(msg)
 }
 
