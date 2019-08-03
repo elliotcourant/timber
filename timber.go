@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/logrusorgru/aurora"
+	"os"
 	"strings"
 	"sync"
 )
@@ -25,6 +26,11 @@ func init() {
 	defaultLogger = &logger{
 		stackDepth: defaultStackDepth,
 		keys:       make(Keys),
+	}
+	if travis := os.Getenv("TRAVIS"); len(travis) > 0 {
+		SetLevel(Level_Error)
+	} else {
+		SetLevel(Level_Trace)
 	}
 }
 
