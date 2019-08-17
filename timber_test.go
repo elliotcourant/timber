@@ -193,7 +193,7 @@ func TestConcurrent(t *testing.T) {
 				}
 			}
 		}()
-		l := New()
+		l := With(Keys{"test": t.Name()})
 		for i := 0; i < numberOfRoutines; i++ {
 			go func(i int) {
 				defer wg.Done()

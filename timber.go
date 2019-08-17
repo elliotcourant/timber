@@ -135,22 +135,13 @@ func (l *logger) Log(lvl Level, v ...interface{}) {
 // This means that you can chain multiple of these together to add/remove keys that
 // are written with every message.
 func (l *logger) With(keys Keys) Logger {
-	l.keysLock.Lock()
-	defer l.keysLock.Unlock()
-	lg := logger{
-		stackDepth: l.stackDepth,
-		keys:       map[string]interface{}{},
-		prefix:     l.prefix,
-	}
+	lg := l.Clone()
 	lg.keysLock.Lock()
 	defer lg.keysLock.Unlock()
-	for k, v := range lg.keys {
-		lg.keys[k] = v
-	}
 	for k, v := range keys {
 		lg.keys[k] = v
 	}
-	return &lg
+	return lg
 }
 
 // Prefix will add a small string before the file path.
@@ -159,6 +150,22 @@ func (l *logger) Prefix(prefix string) Logger {
 	defer l.prefixLock.Unlock()
 	l.prefix = prefix
 	return l
+}
+
+func (l *logger) Clone() *logger {
+	l.keysLock.Lock()
+	defer l.keysLock.Unlock()
+	lg := &logger{
+		stackDepth: l.stackDepth,
+		keys:       map[string]interface{}{},
+		prefix:     l.prefix,
+	}
+	lg.keysLock.Lock()
+	defer lg.keysLock.Unlock()
+	for k, v := range l.keys {
+		lg.keys[k] = v
+	}
+	return lg
 }
 
 func With(keys Keys) Logger {
