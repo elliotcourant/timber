@@ -158,7 +158,7 @@ func (l *logger) Clone() *logger {
 	lg := &logger{
 		stackDepth: l.stackDepth,
 		keys:       map[string]interface{}{},
-		prefix:     l.prefix,
+		prefix:     l.getPrefixString(),
 	}
 	lg.keysLock.Lock()
 	defer lg.keysLock.Unlock()
